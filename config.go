@@ -6,18 +6,19 @@ import (
 	"path"
 
 	"bitbucket.org/mischief/libauth"
-	"github.com/altid/fslib"
+	"github.com/altid/libs/fs"
 	"github.com/mischief/ndb"
 )
 
 type config struct {
-	log    string
-	pass   string
-	user   string
+	log   string
+	pass  string
+	user  string
+	token string
 }
 
 func newConfig() (*config, error) {
-	confdir, err := fslib.UserConfDir()
+	confdir, err := fs.UserConfDir()
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +41,7 @@ func newConfig() (*config, error) {
 }
 
 func readRecord(rec ndb.Record) (*config, error) {
-	datadir, err := fslib.UserShareDir()
+	datadir, err := fs.UserShareDir()
 	if err != nil {
 		datadir = "/tmp/altid"
 	}

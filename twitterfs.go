@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/altid/libs/fs"
 	"github.com/dghubble/go-twitter/twitter"
-	"github.com/altid/fslib"
 	"golang.org/x/oauth2"
 )
 
@@ -32,12 +32,14 @@ func main() {
 		AccessToken: config.token,
 	}
 	httpClient := oa.Client(oauth2.NoContext, token)
-	tc := twitter.NewClient(httpClient)
+	//tc := twitter.NewClient(httpClient)
+	_ = twitter.NewClient(httpClient)
+
 	s := &server{}
 	if err != nil {
 		log.Fatal("Error initiating Twitter session %v", err)
 	}
-	ctrl, err := fslib.CreateCtrlFile(s, config.log, *mtpt, *srv, "feed")
+	ctrl, err := fs.CreateCtlFile(s, config.log, *mtpt, *srv, "feed")
 	defer ctrl.Cleanup()
 	if err != nil {
 		log.Fatal(err)

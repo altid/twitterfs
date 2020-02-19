@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"path"
 	"strings"
 
-	cm "github.com/altid/cleanmark"
-	"github.com/altid/fslib"
+	"github.com/altid/libs/fs"
+	"github.com/altid/libs/markup"
 )
 
 var workdir = path.Join(*mtpt, *srv)
@@ -14,34 +16,37 @@ var workdir = path.Join(*mtpt, *srv)
 type server struct {
 }
 
-func (s *server) Open(c *fslib.Control, name string) error {
+func (s *server) Open(c *fs.Control, name string) error {
+	return nil
 }
 
-func (s *server) Close(c *fslib.Control, name string) error {
+func (s *server) Close(c *fs.Control, name string) error {
+	return nil
 }
 
-func (s *server) Link(c *fslib.Control, from, name string) error {
-	return fmt.Errorf("link command not supported, please use open/close\n")
+func (s *server) Link(c *fs.Control, from, name string) error {
+	return errors.New("link command not supported, please use open/close")
 }
 
-func (s *server) Default(c *fslib.Control, cmd, from, m string) error {
+func (s *server) Default(c *fs.Control, cmd, from, m string) error {
+	return nil
 }
 
 // input is always sent down raw to the server
-func (s *server) Handle(bufname string, l *cm.Lexer) error {
+func (s *server) Handle(bufname string, l *markup.Lexer) error {
 	var m strings.Builder
 	for {
 		i := l.Next()
 		switch i.ItemType {
-		case cm.EOF:
+		case markup.EOF:
 			// write m.String() to thing
-			return err
-		case cm.ErrorText:
-		case cm.UrlLink, cm.UrlText, cm.ImagePath, cm.ImageLink, cm.ImageText:
-		case cm.ColorText, cm.ColorTextBold:
-		case cm.BoldText:
-		case cm.EmphasisText:
-		case cm.UnderlineText:
+			return io.EOF
+		case markup.ErrorText:
+		case markup.UrlLink, markup.UrlText, markup.ImagePath, markup.ImageLink, markup.ImageText:
+		case markup.ColorText, markup.ColorTextBold:
+		case markup.BoldText:
+		case markup.EmphasisText:
+		case markup.UnderlineText:
 		default:
 			m.Write(i.Data)
 		}
