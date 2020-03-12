@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	mtpt = flag.String("p", "/tmp/altid", "Path for filesystem")
-	srv  = flag.String("s", "twitter", "Name of service")
+	mtpt  = flag.String("p", "/tmp/altid", "Path for filesystem")
+	srv   = flag.String("s", "twitter", "Name of service")
+	debug = flag.Bool("d", false, "enable debug logging")
 )
 
 func main() {
@@ -37,9 +38,9 @@ func main() {
 
 	s := &server{}
 	if err != nil {
-		log.Fatal("Error initiating Twitter session %v", err)
+		log.Fatalf("Error initiating Twitter session %v", err)
 	}
-	ctrl, err := fs.CreateCtlFile(s, config.log, *mtpt, *srv, "feed")
+	ctrl, err := fs.CreateCtlFile(s, config.log, *mtpt, *srv, "feed", *debug)
 	defer ctrl.Cleanup()
 	if err != nil {
 		log.Fatal(err)
