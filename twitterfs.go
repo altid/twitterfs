@@ -29,9 +29,10 @@ func main() {
 	conf := &struct {
 		Logdir types.Logdir
 		Auth   types.Auth
+		Handle string `Enter your current Twitter handle (@foo)`
 		User   string
 		Token  string
-	}{"none", "password", "none", "none"}
+	}{"none", "password", "", "none", "none"}
 
 	if *setup {
 		if e := config.Create(conf, *srv, "", *debug); e != nil {
@@ -46,7 +47,7 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	s := newServer(cancel, conf.Token, string(conf.Auth))
+	s := newServer(cancel, conf.Token, string(conf.Auth), conf.Handle)
 
 	ctrl, err := fs.CreateCtlFile(ctx, s, string(conf.Logdir), *mtpt, *srv, "feed", *debug)
 	if err != nil {
@@ -60,7 +61,7 @@ func main() {
 		log.Fatal(e)
 	}
 
-	stream, err := watchFeed(s, ctrl, s.tc)
+	stream, err := setupStream(s, ctrl, s.tc)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -24,3 +24,11 @@ func dm(tc *twitter.Client, id, msg string) error {
 
 	return err
 }
+
+func tm(tc *twitter.Client, id int64, msg string) error {
+	_, _, err := tc.Statuses.Update(msg, &twitter.StatusUpdateParams{
+		InReplyToStatusID: id,
+	})
+
+	return err
+}
