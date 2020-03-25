@@ -28,8 +28,8 @@ type server struct {
 // create our own client with the auth proxied through our servers
 func newServer(cancel context.CancelFunc, token, secret string) *server {
 	config := oauth1.NewConfig(
-		os.Getenv("TWITTER-CONSUMER-KEY"),
-		os.Getenv("TWITTER-CONSUMER-SECRET"),
+		os.Getenv("TWITTER_CONSUMER_KEY"),
+		os.Getenv("TWITTER_CONSUMER_SECRET"),
 	)
 	acctoken := oauth1.NewToken(token, secret)
 	client := config.Client(oauth1.NoContext, acctoken)

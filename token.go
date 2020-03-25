@@ -13,8 +13,8 @@ import (
 // We stash auth tokens in a db, and return them on lookup
 func generateToken() {
 	c := oauth.NewConsumer(
-		os.Getenv("TWITTER-CONSUMER-KEY"),
-		os.Getenv("TWITTER-CONSUMER-SECRET"),
+		os.Getenv("TWITTER_CONSUMER_KEY"),
+		os.Getenv("TWITTER_CONSUMER_SECRET"),
 		oauth.ServiceProvider{
 			RequestTokenUrl:   "https://api.twitter.com/oauth/request_token",
 			AuthorizeTokenUrl: "https://api.twitter.com/oauth/authorize",

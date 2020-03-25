@@ -11,8 +11,8 @@ To acquire these keys, log in to https://developer.twitter.com/en/apps and creat
 The consumer key and consumer secret will be provided upon completion.
 
 ```
-export TWITTER-CONSUMER-KEY=mytwitterconsumerkey
-export TWITTER-CONSUMER-SECRET=mytwitterconsumersecret
+export TWITTER_CONSUMER_KEY=mytwitterconsumerkey
+export TWITTER_CONSUMER_SECRET=mytwitterconsumersecret
 
 twitterfs [-p <dir>] [-s <srv>] | -t | -conf
 
