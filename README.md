@@ -29,6 +29,7 @@ twitterfs [-p <dir>] [-s <srv>] | -t | -conf
 service=twitter address=twitter.com auth=password
 	password=myusersecret
 	token=myusertoken
+	handle=@myhandle
 	log=/usr/halfwit/log
 	#listen_address=192.168.0.4
 ```
