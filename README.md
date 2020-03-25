@@ -10,11 +10,13 @@ Ensure you have done the following (for now, this will change)
 To acquire these keys, log in to https://developer.twitter.com/en/apps and create a new "App" (using oauth1).
 The consumer key and consumer secret will be provided upon completion.
 
-
+```
 export TWITTER-CONSUMER-KEY=mytwitterconsumerkey
 export TWITTER-CONSUMER-SECRET=mytwitterconsumersecret
 
-`twitterfs [-p <dir>] [-s <srv>]`
+twitterfs [-p <dir>] [-s <srv>] | -t | -conf
+
+```
 
  - `<dir>` fileserver path. Will default to /tmp/altid if none is given
  - `<srv>` service name to use. (Default `twitter`)
