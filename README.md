@@ -23,12 +23,21 @@ twitterfs [-p <dir>] [-s <srv>] | -t | -conf
 
 ## Configuration
 
+### Automatic
+
+To create interactively, run `twitterfs -conf` and follow the steps
+
+[![asciicast](https://asciinema.org/a/hi5pQKjk9NwVrAGU2kzm4hLZF.svg)](https://asciinema.org/a/hi5pQKjk9NwVrAGU2kzm4hLZF)
+
+
+### Manual
+
 ```ndb
 
 # altid/config - Place this in your operating systems' default configuration directory
 
-service=twitter address=twitter.com auth=password
-	password=myusersecret
+service=twitter
+	secret=myusersecret
 	token=myusertoken
 	handle=@myhandle
 	log=/usr/halfwit/log
