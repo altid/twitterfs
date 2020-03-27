@@ -27,7 +27,7 @@ type server struct {
 // queries come in with token, secret and we use that to
 // oauth validate them to our service, returning the config entry
 // create our own client with the auth proxied through our servers
-func newServer(cancel context.CancelFunc, token, secret, handle string) *server {
+func newServer(cancel context.CancelFunc, token, secret string) *server {
 	config := oauth1.NewConfig(
 		os.Getenv("TWITTER_CONSUMER_KEY"),
 		os.Getenv("TWITTER_CONSUMER_SECRET"),
@@ -36,7 +36,9 @@ func newServer(cancel context.CancelFunc, token, secret, handle string) *server 
 	client := config.Client(oauth1.NoContext, acctoken)
 
 	tc := twitter.NewClient(client)
-	return &server{cancel, tc, handle}
+	user, _, _ := tc.Accounts.VerifyCredentials(&twitter.AccountVerifyParams{})
+
+	return &server{cancel, tc, "@" + user.ScreenName}
 }
 
 // Start a PM

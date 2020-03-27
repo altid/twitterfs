@@ -28,10 +28,9 @@ func main() {
 	conf := &struct {
 		ListenAddress types.ListenAddress
 		Logdir        types.Logdir
-		Handle        string `Enter your current Twitter handle (@foo)`
 		Token         string
 		Secret        string
-	}{"none", "none", "", "none", "none"}
+	}{"none", "", "none", "none"}
 
 	if *setup {
 		at := generateToken()
@@ -58,7 +57,7 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	s := newServer(cancel, conf.Token, conf.Secret, conf.Handle)
+	s := newServer(cancel, conf.Token, conf.Secret)
 
 	ctrl, err := fs.CreateCtlFile(ctx, s, string(conf.Logdir), *mtpt, *srv, "feed", *debug)
 	if err != nil {
