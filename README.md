@@ -39,9 +39,8 @@ To create interactively, run `twitterfs -conf` and follow the steps
 service=twitter
 	secret=myusersecret
 	token=myusertoken
-	handle=@myhandle
 	log=/usr/halfwit/log
-	#listen_address=192.168.0.4
+	listen_address=192.168.0.4
 
 ```
 
