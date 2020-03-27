@@ -166,5 +166,4 @@ func (s *server) Handle(bufname string, l *markup.Lexer) error {
 			m.Write(i.Data)
 		}
 	}
-	return fmt.Errorf("Unknown error parsing input encountered")
 }

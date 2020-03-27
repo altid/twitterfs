@@ -46,7 +46,6 @@ service=twitter
 ```
 
 - service matches the given servicename (default "twitter")
-- token and secret are generated from running `twitterfs -t`, ensuring you have set your ENV variables correctly
 - log is a location to store Twitter logs. A special value of `none` disables logging.
 - listen_address is a more advanced topic, explained here: [Using listen_address](https://altid.github.io/using-listen-address.html)
 

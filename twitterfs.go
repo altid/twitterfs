@@ -16,7 +16,6 @@ var (
 	srv   = flag.String("s", "twitter", "Name of service")
 	debug = flag.Bool("d", false, "enable debug logging")
 	setup = flag.Bool("conf", false, "Run configuration setup")
-	token = flag.Bool("t", false, "Fetch an oauth token")
 )
 
 func main() {
@@ -27,14 +26,17 @@ func main() {
 	}
 
 	conf := &struct {
-		Logdir types.Logdir
-		Auth   types.Auth
-		Handle string `Enter your current Twitter handle (@foo)`
-		User   string
-		Token  string
-	}{"none", "password", "", "none", "none"}
+		ListenAddress types.ListenAddress
+		Logdir        types.Logdir
+		Handle        string `Enter your current Twitter handle (@foo)`
+		Token         string
+		Secret        string
+	}{"none", "none", "", "none", "none"}
 
 	if *setup {
+		at := generateToken()
+		conf.Token = at.Token
+		conf.Secret = at.Secret
 		if e := config.Create(conf, *srv, "", *debug); e != nil {
 			log.Fatal(e)
 		}
@@ -46,8 +48,17 @@ func main() {
 		log.Fatal(e)
 	}
 
+	if conf.Token == "none" || conf.Secret == "none" {
+		at := generateToken()
+		
+		conf.Token = at.Token
+		conf.Secret = at.Secret
+		
+		log.Printf("To skip this step, run %s -conf and store keys in a conf", os.Args[0])
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
-	s := newServer(cancel, conf.Token, string(conf.Auth), conf.Handle)
+	s := newServer(cancel, conf.Token, conf.Secret, conf.Handle)
 
 	ctrl, err := fs.CreateCtlFile(ctx, s, string(conf.Logdir), *mtpt, *srv, "feed", *debug)
 	if err != nil {

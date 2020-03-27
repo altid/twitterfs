@@ -11,7 +11,9 @@ import (
 // We need to have our consumer-key and consumer-secret on a server
 // Then we can serve up these tokens to users, and they can set
 // We stash auth tokens in a db, and return them on lookup
-func generateToken() {
+func generateToken() *oauth.AccessToken {
+	l := log.New(os.Stderr, "", 0)
+
 	c := oauth.NewConsumer(
 		os.Getenv("TWITTER_CONSUMER_KEY"),
 		os.Getenv("TWITTER_CONSUMER_SECRET"),
@@ -26,18 +28,19 @@ func generateToken() {
 
 	requestToken, u, err := c.GetRequestTokenAndUrl("oob")
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal("Unable to complete request. Did you set TWITTER_CONSUMER_KEY and/or TWITTER_CONSUMER_SECRET environment variables?")
 	}
-	fmt.Printf("Please go to %s and retreive the 7-digit key\n", u)
-	fmt.Println("Enter your key below, and press enter:")
+
+	fmt.Println("A link has been created to retreive a 7-Digit key")
+	fmt.Printf("\n%s\n", u)
+	fmt.Println("Paste your 7-Digit key below, and press enter:")
 
 	var accessToken *oauth.AccessToken
 	var count uint
 
 	for {
 		if count > 2 {
-			fmt.Println("Failed to validate token, please try again later")
-			os.Exit(0)
+			l.Fatal("Failed to validate token, please try again later")
 		}
 		verificationCode := ""
 		fmt.Scanln(&verificationCode)
@@ -45,16 +48,11 @@ func generateToken() {
 		accessToken, err = c.AuthorizeToken(requestToken, verificationCode)
 		if err != nil {
 			count++
-			fmt.Println("something went wrong. Please enter your code again")
+			l.Println("something went wrong. Please enter your code again")
 			continue
 		}
 
 		break
 	}
-	fmt.Printf("Success! Please add this value to your altid/config:\n\nserver=%s token=%s auth=password password=%s\n",
-		*srv,
-		accessToken.Token,
-		accessToken.Secret,
-	)
-	os.Exit(0)
+	return accessToken
 }
