@@ -27,7 +27,7 @@ func setupStream(s *server, ctrl *fs.Control, tc *twitter.Client) (*twitter.Stre
 	}
 
 	demux.DM = func(dm *twitter.DirectMessage) {
-		
+
 		ctrl.CreateBuffer("@"+dm.Sender.ScreenName, "feed")
 
 		dw, _ := ctrl.MainWriter("@"+dm.Sender.ScreenName, "feed")
@@ -35,9 +35,7 @@ func setupStream(s *server, ctrl *fs.Control, tc *twitter.Client) (*twitter.Stre
 
 		fmt.Fprintf(dw, "%%[@%s](blue) %s\n", dm.Sender.ScreenName, dm.Text)
 
-		input, _ := fs.NewInput(s, path.Join(*mtpt, *srv), "@"+dm.Sender.ScreenName, *debug)
-		input.Start()
-
+		ctrl.Input("@" + dm.Sender.ScreenName)
 		ctrl.Event(path.Join(*mtpt, *srv, "@"+dm.Sender.ScreenName))
 	}
 

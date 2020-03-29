@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -18,7 +17,6 @@ import (
 var workdir = path.Join(*mtpt, *srv)
 
 type server struct {
-	cancel context.CancelFunc
 	tc     *twitter.Client
 	handle string
 }
@@ -27,7 +25,7 @@ type server struct {
 // queries come in with token, secret and we use that to
 // oauth validate them to our service, returning the config entry
 // create our own client with the auth proxied through our servers
-func newServer(cancel context.CancelFunc, token, secret string) *server {
+func newServer(token, secret string) *server {
 	config := oauth1.NewConfig(
 		os.Getenv("TWITTER_CONSUMER_KEY"),
 		os.Getenv("TWITTER_CONSUMER_SECRET"),
@@ -38,7 +36,7 @@ func newServer(cancel context.CancelFunc, token, secret string) *server {
 	tc := twitter.NewClient(client)
 	user, _, _ := tc.Accounts.VerifyCredentials(&twitter.AccountVerifyParams{})
 
-	return &server{cancel, tc, "@" + user.ScreenName}
+	return &server{tc, "@" + user.ScreenName}
 }
 
 // Start a PM
@@ -86,14 +84,7 @@ func open(s *server, c *fs.Control, name string) error {
 	}
 
 	c.Event(path.Join(*mtpt, *srv, name, "feed"))
-
-	input, err := fs.NewInput(s, path.Join(*mtpt, *srv), name, *debug)
-	if err != nil {
-		return err
-	}
-
-	input.Start()
-	return nil
+	return c.Input(name)
 }
 
 func (s *server) Run(c *fs.Control, cmd *fs.Command) error {
@@ -127,7 +118,7 @@ func (s *server) Run(c *fs.Control, cmd *fs.Command) error {
 }
 
 func (s *server) Quit() {
-	s.cancel()
+
 }
 
 // Twitter doesn't support any formatting, don't use

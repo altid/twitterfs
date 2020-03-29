@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"os"
@@ -49,17 +48,16 @@ func main() {
 
 	if conf.Token == "none" || conf.Secret == "none" {
 		at := generateToken()
-		
+
 		conf.Token = at.Token
 		conf.Secret = at.Secret
-		
+
 		log.Printf("To skip this step, run %s -conf and store keys in a conf", os.Args[0])
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	s := newServer(cancel, conf.Token, conf.Secret)
+	s := newServer(conf.Token, conf.Secret)
 
-	ctrl, err := fs.CreateCtlFile(ctx, s, string(conf.Logdir), *mtpt, *srv, "feed", *debug)
+	ctrl, err := fs.New(s, string(conf.Logdir), *mtpt, *srv, "feed", *debug)
 	if err != nil {
 		log.Fatal(err)
 	}
