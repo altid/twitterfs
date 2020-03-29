@@ -42,7 +42,7 @@ func newServer(cancel context.CancelFunc, token, secret string) *server {
 }
 
 // Start a PM
-func (s *server) Open(c *fs.Control, name string) error {
+func open(s *server, c *fs.Control, name string) error {
 	if name[0] != '@' {
 		name = "@" + name
 	}
@@ -96,40 +96,34 @@ func (s *server) Open(c *fs.Control, name string) error {
 	return nil
 }
 
-func (s *server) Close(c *fs.Control, name string) error {
-	return c.DeleteBuffer(name, "feed")
-}
-
-func (s *server) Link(c *fs.Control, from, name string) error {
-	return errors.New("link command not supported, please use open/close")
-}
-
-func (s *server) Default(c *fs.Control, cmd *fs.Command) error {
+func (s *server) Run(c *fs.Control, cmd *fs.Command) error {
 	switch cmd.Name {
+	case "open":
+		// Tweet handles cannot have spaces
+		return open(s, c, cmd.Args[0])
+	case "close":
+		return c.DeleteBuffer(cmd.Args[0], "feed")
 	case "tweet":
 		msg := strings.Join(cmd.Args, " ")
-		s.tc.Statuses.Update(msg, nil)
+		_, _, err := s.tc.Statuses.Update(msg, nil)
+
+		return err
 	case "rt":
 		id, err := strconv.Atoi(cmd.Args[0][1:])
 		if err != nil {
 			return err
 		}
 
-		s.tc.Statuses.Retweet(int64(id), nil)
-		//case "reply" id data...
-		//case "love":
-		//case "follow":
-		//case "msg":
+		_, _, err = s.tc.Statuses.Retweet(int64(id), nil)
+		return err
+	//case "reply" id data...
+	//case "love":
+	//case "follow":
+	//case "msg":
+
+	default:
+		return errors.New("Command not supported")
 	}
-	return nil
-}
-
-func (s *server) Refresh(c *fs.Control) error {
-	return nil
-}
-
-func (s *server) Restart(c *fs.Control) error {
-	return nil
 }
 
 func (s *server) Quit() {
@@ -138,34 +132,23 @@ func (s *server) Quit() {
 
 // Twitter doesn't support any formatting, don't use
 func (s *server) Handle(bufname string, l *markup.Lexer) error {
-	var m strings.Builder
-
-	for {
-		i := l.Next()
-		switch i.ItemType {
-		case markup.EOF:
-			if bufname[0] == '@' {
-				bufname = bufname[1:]
-			}
-
-			u, _, err := s.tc.Users.Lookup(
-				&twitter.UserLookupParams{
-					ScreenName: []string{bufname},
-				},
-			)
-			if err != nil {
-				return err
-			}
-
-			return dm(s.tc, u[0].IDStr, m.String())
-		case markup.ErrorText:
-		case markup.URLLink, markup.URLText, markup.ImagePath, markup.ImageLink, markup.ImageText:
-		case markup.ColorText, markup.ColorTextBold:
-		case markup.BoldText:
-		case markup.EmphasisText:
-		case markup.UnderlineText:
-		default:
-			m.Write(i.Data)
-		}
+	if bufname[0] == '@' {
+		bufname = bufname[1:]
 	}
+
+	u, _, err := s.tc.Users.Lookup(
+		&twitter.UserLookupParams{
+			ScreenName: []string{bufname},
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	input, err := l.String()
+	if err != nil {
+		return err
+	}
+
+	return dm(s.tc, u[0].IDStr, input)
 }
