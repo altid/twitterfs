@@ -25,11 +25,11 @@ func main() {
 	}
 
 	conf := &struct {
-		ListenAddress types.ListenAddress
-		Logdir        types.Logdir
-		Token         string
-		Secret        string
-	}{"none", "", "none", "none"}
+		Listen types.ListenAddress `altid:"listen_address,no_prompt"`
+		Logdir types.Logdir        `altid:"logdir,no_prompt"`
+		Token  string              `altid:"token,prompt:your Twitter token"`
+		Secret string              `altid:"secret,prompt:your Twitter secret"`
+	}{"", "", "none", "none"}
 
 	if *setup {
 		at := generateToken()
