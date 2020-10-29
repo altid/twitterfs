@@ -15,4 +15,10 @@ var TwitterCommands = []*fs.Command{
 		Heading:     fs.DefaultGroup,
 		Description: "Retweet by ID",
 	},
+	{
+		Name:		"reply",
+		Args:		[]string{"<#id> <msg>"},
+		Heading: 	fs.DefaultGroup,
+		Description: "Reply to a given tweet by ID",
+	}
 }

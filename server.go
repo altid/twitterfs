@@ -107,7 +107,17 @@ func (s *server) Run(c *fs.Control, cmd *fs.Command) error {
 
 		_, _, err = s.tc.Statuses.Retweet(int64(id), nil)
 		return err
-	//case "reply" id data...
+	case "reply":
+		id := strings.Fields(cmd.Args[0])
+		fmt.Println("Here with ", id[0][1:], " and ", strings.Join(id[1:], " "))
+		//ts := &twitter.StatusUpdateParams{
+		//	InReplyToStatusID: int64(id),
+		//}
+		
+		//_, _, err = s.tc.Statuses.Update(msg, ts)
+
+		return err
+
 	//case "love":
 	//case "follow":
 	//case "msg":
